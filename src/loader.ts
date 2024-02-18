@@ -241,6 +241,28 @@ let prevAppUnmountedDeferred: Deferred<void>;
 
 export type ParcelConfigObjectGetter = (remountContainer?: string | HTMLElement) => ParcelConfigObject;
 
+/*
+
+这个函数是一个异步函数，用于加载一个应用程序（loadApp），它接受三个参数：
+app: LoadableApp<T>：表示要加载的应用程序的信息，包括应用程序的入口（entry）和应用程序的名称（name）。
+configuration: FrameworkConfiguration = {}：表示框架配置，包括一些可选的配置项，如是否启用单例模式（singular）、是否使用沙箱（sandbox）、全局上下文（globalContext）等。
+lifeCycles?: FrameworkLifeCycles<T>：表示应用程序的生命周期钩子，包括beforeUnmount、afterUnmount、afterMount、beforeMount、beforeLoad等。
+
+函数的主要逻辑如下：
+根据传入的应用程序名称生成应用实例ID。
+执行一些性能标记，用于性能监控。
+根据配置项加载应用程序的入口，获取模板、执行脚本等。
+在加载应用程序之前，根据单例模式配置，等待其他应用程序卸载完成。
+获取应用程序的模板内容，并根据配置项进行处理。
+根据传入的生命周期钩子，合并默认生命周期钩子和用户定义的生命周期钩子。
+在加载应用程序之前，执行beforeLoad生命周期钩子。
+执行应用程序的脚本并获取脚本的导出对象。
+根据脚本的导出对象获取应用程序的生命周期函数。
+设置全局状态管理相关的函数，包括onGlobalStateChange、setGlobalState和offGlobalStateChange。
+创建一个ParcelConfigObjectGetter函数，用于获取应用程序的配置对象。
+返回ParcelConfigObjectGetter函数。
+最后，ParcelConfigObjectGetter函数用于获取应用程序的配置对象，该对象包含应用程序的名称、生命周期钩子、加载、卸载等函数。
+*/
 export async function loadApp<T extends ObjectType>(
   app: LoadableApp<T>,
   configuration: FrameworkConfiguration = {},

@@ -60,6 +60,7 @@ declare global {
   }
 }
 
+/* navigator.connection 获取设备的网络连接信息 */
 const isSlowNetwork = navigator.connection
   ? navigator.connection.saveData ||
     (navigator.connection.type !== 'wifi' &&
@@ -68,6 +69,7 @@ const isSlowNetwork = navigator.connection
   : false;
 
 /**
+ * 预加载资源，在移动网络中不执行任何操作
  * prefetch assets, do nothing while in mobile network
  * @param entry
  * @param opts
@@ -85,11 +87,21 @@ function prefetch(entry: Entry, opts?: ImportEntryOpts): void {
   });
 }
 
+/*
+第一次挂载后的预加载
+*/
 function prefetchAfterFirstMounted(apps: AppMetadata[], opts?: ImportEntryOpts): void {
   window.addEventListener('single-spa:first-mount', function listener() {
+    /*
+    getAppStatus 获取应用状态常量
+    NOT_LOADED 应用已经加载和初始化，还未挂载
+     */
     const notLoadedApps = apps.filter((app) => getAppStatus(app.name) === NOT_LOADED);
 
     if (process.env.NODE_ENV === 'development') {
+      /*
+      getMountedApps 获取当前已经挂载应用的名字数组
+      */
       const mountedApps = getMountedApps();
       console.log(`[qiankun] prefetch starting after ${mountedApps} mounted...`, notLoadedApps);
     }
@@ -100,6 +112,10 @@ function prefetchAfterFirstMounted(apps: AppMetadata[], opts?: ImportEntryOpts):
   });
 }
 
+/*
+立即预载
+手动预加载指定的微应用静态资源
+*/
 export function prefetchImmediately(apps: AppMetadata[], opts?: ImportEntryOpts): void {
   if (process.env.NODE_ENV === 'development') {
     console.log('[qiankun] prefetch starting for apps...', apps);
@@ -108,6 +124,29 @@ export function prefetchImmediately(apps: AppMetadata[], opts?: ImportEntryOpts)
   apps.forEach(({ entry }) => prefetch(entry, opts));
 }
 
+/*
+
+这个函数 doPrefetchStrategy 用于执行预取策略，根据传入的预取策略参数，对应用进行预取。
+
+函数接受三个参数：
+apps: AppMetadata[]：表示应用的元数据数组，每个元数据包含了应用的名称等信息。
+prefetchStrategy: PrefetchStrategy：表示预取策略，可以是一个字符串数组、一个函数或者一个布尔值。
+importEntryOpts?: ImportEntryOpts：表示导入入口的选项。
+
+函数的主要逻辑如下：
+定义了一个内部函数 appsName2Apps，用于根据应用名称数组获取对应的应用元数据数组。
+根据传入的 prefetchStrategy 类型进行不同的处理：
+如果是一个数组，则将数组中的应用名称对应的应用进行预取。
+如果是一个函数，则执行该函数，根据函数返回的结果执行不同的预取策略。
+如果是布尔值 true，则对所有应用进行预取。
+如果是字符串 'all'，则对所有应用进行立即预取。
+其他情况不执行任何操作。
+
+在执行预取时，根据不同的策略调用了两个内部函数：
+prefetchImmediately(apps, importEntryOpts)：立即预取应用，即立即开始加载应用的资源。
+prefetchAfterFirstMounted(apps, importEntryOpts)：在第一个应用挂载后开始预取应用，即等待第一个应用挂载完成后再开始加载其他应用的资源。
+最后，根据传入的预取策略，采取相应的预取行为。
+*/
 export function doPrefetchStrategy(
   apps: AppMetadata[],
   prefetchStrategy: PrefetchStrategy,

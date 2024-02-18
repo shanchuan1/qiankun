@@ -23,6 +23,7 @@ const defaultUrlRerouteOnly = true;
 
 const frameworkStartedDefer = new Deferred<void>();
 
+/* 低版本浏览器的自动降级 */
 const autoDowngradeForLowVersionBrowser = (configuration: FrameworkConfiguration): FrameworkConfiguration => {
   const { sandbox = true, singular } = configuration;
   if (sandbox) {
@@ -56,6 +57,26 @@ const autoDowngradeForLowVersionBrowser = (configuration: FrameworkConfiguration
   return configuration;
 };
 
+/*
+ 在主应用中调用微应用 基于路由配置
+ 当微应用信息注册完之后，一旦浏览器的 url 发生变化，便会自动触发 qiankun 的匹配逻辑，所有 activeRule 规则匹配上的微应用就会被插入到指定的 container 中，同时依次调用微应用暴露出的生命周期钩子
+ 基于single-spa库的registerApplication二次封装的函数registerMicroApps： 注册微应用 （重新规划定义函数的入参与调用的作用）
+ 例子：
+ registerMicroApps([
+    {
+      name: 'react app', // app name registered
+      entry: '//localhost:7100',
+      container: '#yourContainer',
+      activeRule: '/yourActiveRule',
+    },
+    {
+      name: 'vue app',
+      entry: { scripts: ['//localhost:7100/main.js'] },
+      container: '#yourContainer2',
+      activeRule: '/yourActiveRule2',
+    },
+  ]);
+*/
 export function registerMicroApps<T extends ObjectType>(
   apps: Array<RegistrableApp<T>>,
   lifeCycles?: FrameworkLifeCycles<T>,
@@ -92,6 +113,15 @@ export function registerMicroApps<T extends ObjectType>(
 const appConfigPromiseGetterMap = new Map<string, Promise<ParcelConfigObjectGetter>>();
 const containerMicroAppsMap = new Map<string, MicroApp[]>();
 
+/*
+如果微应用不是直接跟路由关联的时候，可以选择手动加载微应用
+例子：
+loadMicroApp({
+  name: 'app',
+  entry: '//localhost:7100',
+  container: '#yourContainer',
+});
+*/
 export function loadMicroApp<T extends ObjectType>(
   app: LoadableApp<T>,
   configuration?: FrameworkConfiguration & { autoStart?: boolean },
@@ -207,6 +237,11 @@ export function loadMicroApp<T extends ObjectType>(
   return microApp;
 }
 
+/*
+  在调用 start 之前, 应用会被加载, 但不会初始化
+  single-spa的start API
+  加载完应用后初始化（挂载）
+  */
 export function start(opts: FrameworkConfiguration = {}) {
   frameworkConfiguration = { prefetch: true, singular: true, sandbox: true, ...opts };
   const { prefetch, urlRerouteOnly = defaultUrlRerouteOnly, ...importEntryOpts } = frameworkConfiguration;

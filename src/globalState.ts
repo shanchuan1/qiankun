@@ -19,6 +19,9 @@ function emitGlobal(state: Record<string, any>, prevState: Record<string, any>) 
   });
 }
 
+/*
+定义全局状态，并返回通信方法，建议在主应用使用，微应用通过 props 获取通信方法
+*/
 export function initGlobalState(state: Record<string, any> = {}) {
   if (process.env.NODE_ENV === 'development') {
     console.warn(`[qiankun] globalState tools will be removed in 3.0, pls don't use it!`);
@@ -34,6 +37,9 @@ export function initGlobalState(state: Record<string, any> = {}) {
   return getMicroAppStateActions(`global-${+new Date()}`, true);
 }
 
+/*
+获取微应用状态方法的action
+*/
 export function getMicroAppStateActions(id: string, isMaster?: boolean): MicroAppStateActions {
   return {
     /**
