@@ -46,6 +46,7 @@ export function createSandboxContainer(
       ? new LegacySandbox(appName, globalContext)
       : new ProxySandbox(appName, globalContext, { speedy: !!speedySandBox });
   } else {
+    // 基于 diff 方式实现的沙箱，用于不支持 Proxy 的低版本浏览器
     sandbox = new SnapshotSandbox(appName);
   }
 

@@ -48,6 +48,7 @@
     "start:purehtml": "cd examples/purehtml && yarn start",
     "install:vue3": "cd examples/vue3 && yarn",
     "start:vue3": "cd examples/vue3 && yarn start",
+    "clean:examples": "rimraf --glob ./examples/*/node_modules",
     "build": "father-build",
     "release": "np --no-cleanup --yolo --no-publish",
     "prepublishOnly": "yarn ci",

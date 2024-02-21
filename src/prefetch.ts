@@ -81,7 +81,13 @@ function prefetch(entry: Entry, opts?: ImportEntryOpts): void {
   }
 
   requestIdleCallback(async () => {
+    /* 重点是importEntry做了哪些工作？ 返回了js与css文件？？ */
     const { getExternalScripts, getExternalStyleSheets } = await importEntry(entry, opts);
+    console.log(
+      '🚀 ~ requestIdleCallback ~ getExternalScripts, getExternalStyleSheets:',
+      getExternalScripts,
+      getExternalStyleSheets,
+    );
     requestIdleCallback(getExternalStyleSheets);
     requestIdleCallback(getExternalScripts);
   });
