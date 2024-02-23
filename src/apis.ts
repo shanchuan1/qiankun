@@ -94,7 +94,12 @@ export function registerMicroApps<T extends ObjectType>(
       app: async () => {
         loader(true);
         await frameworkStartedDefer.promise;
-
+        console.log(
+          '🚀 ~ app: ~ { name, props, ...appConfig }, frameworkConfiguration, lifeCycles:',
+          { name, props, ...appConfig },
+          frameworkConfiguration,
+          lifeCycles,
+        );
         const { mount, ...otherMicroAppConfigs } = (
           await loadApp({ name, props, ...appConfig }, frameworkConfiguration, lifeCycles)
         )();
@@ -233,7 +238,7 @@ export function loadMicroApp<T extends ObjectType>(
       microApp.unmountPromise.then(cleanup).catch(cleanup);
     }
   }
-
+  console.log('🚀 ~ microApp:', microApp);
   return microApp;
 }
 

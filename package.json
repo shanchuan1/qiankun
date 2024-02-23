@@ -30,7 +30,7 @@
     "lib"
   ],
   "scripts": {
-    "examples:install": "npm-run-all --serial build install:*",
+    "examples:install": "npm-run-all --serial install:*",
     "examples:start": "npm-run-all --parallel start:*",
     "examples:start-multiple": "run-p start-main-multiple start:react15 start:vue",
     "install:main": "cd examples/main && yarn",

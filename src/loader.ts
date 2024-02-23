@@ -105,7 +105,7 @@ function createElement(
       css.process(appElement!, stylesheetElement, appInstanceId);
     });
   }
-
+  console.log('🚀 ~ appElement:', appElement);
   return appElement;
 }
 
@@ -286,6 +286,13 @@ export async function loadApp<T extends ObjectType>(
 
   // get the entry html content and script executor
   const { template, execScripts, assetPublicPath, getExternalScripts } = await importEntry(entry, importEntryOpts);
+  console.log('🚀 ~ template:', template);
+  /* template: 子应用下的index.html文件 也就是单页面应用的index.html文件*/
+  console.log('🚀 ~ execScripts:', execScripts);
+  console.log('🚀 ~ assetPublicPath:', assetPublicPath);
+  /*assetPublicPath 子应用资源地址 一般为配置的entry入口地址*/
+  console.log('🚀 ~ getExternalScripts:', getExternalScripts);
+
   // trigger external scripts loading to make sure all assets are ready before execScripts calling
   await getExternalScripts();
 
@@ -297,6 +304,7 @@ export async function loadApp<T extends ObjectType>(
   }
 
   const appContent = getDefaultTplWrapper(appInstanceId, sandbox)(template);
+  console.log('🚀 ~ appContent:', appContent);
 
   const strictStyleIsolation = typeof sandbox === 'object' && !!sandbox.strictStyleIsolation;
 
@@ -307,6 +315,7 @@ export async function loadApp<T extends ObjectType>(
   }
 
   const scopedCSS = isEnableScopedCSS(sandbox);
+  console.log('🚀 ~ scopedCSS:', scopedCSS);
   let initialAppWrapperElement: HTMLElement | null = createElement(
     appContent,
     strictStyleIsolation,
@@ -353,6 +362,7 @@ export async function loadApp<T extends ObjectType>(
     global = sandboxContainer.instance.proxy as typeof window;
     mountSandbox = sandboxContainer.mount;
     unmountSandbox = sandboxContainer.unmount;
+    console.log('🚀 ~ sandboxContainer:', sandboxContainer);
   }
 
   const {
@@ -476,5 +486,6 @@ export async function loadApp<T extends ObjectType>(
     return parcelConfig;
   };
 
+  console.log('🚀 loadApp ~ parcelConfigGetter:', parcelConfigGetter);
   return parcelConfigGetter;
 }

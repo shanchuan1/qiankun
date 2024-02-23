@@ -28,7 +28,7 @@ export default {
   esm: 'babel',
   cjs: 'babel',
   umd: {
-    minFile: true,
+    // minFile: true,
     sourcemap: true,
   },
   runtimeHelpers: true,
